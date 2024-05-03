@@ -23,18 +23,39 @@ const user = {
         }
     },
    
-    create : async (req,res)=>{
-        try{
-            const {username , password , name , lastname, email , dni , fechaDeNacimiento , telefono , codigoPostal}= req.body
-            const restDetail = await Users.reate({
-                username , password , name , lastname, email , dni , fechaDeNacimiento , telefono , codigoPostal
-            })
-            res.send({data : restDetail})
-        }
-        catch(e){
-            httpError(res,e)
+    create: async (req, res) => {
+        try {
+            const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
+    
+            // Verifica si el username ya está registrado
+            const existingUsername = await Users.findOne({ username });
+            if (existingUsername) {
+                return res.status(400).send({ message: "El nombre de usuario ya está registrado" });
+            }
+    
+            // Verifica si el email ya está registrado
+            const existingEmail = await Users.findOne({ email });
+            if (existingEmail) {
+                return res.status(400).send({ message: "El correo electrónico ya está registrado" });
+            }
+    
+            // Verifica si el dni ya está registrado
+            const existingDNI = await Users.findOne({ dni });
+            if (existingDNI) {
+                return res.status(400).send({ message: "El DNI ya está registrado" });
+            }
+    
+            // Crea el nuevo usuario
+            const newUser = await Users.create({
+                username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
+            });
+    
+            res.status(201).send({ data: newUser });
+        } catch (e) {
+            httpError(res, e);
         }
     },
+    
     update: async (req, res) => {
         const { id } = req.params;
         try {
