@@ -9,6 +9,8 @@ const AnfitrionSchema = new mongoose.Schema({
     dni: { type: String, required: true, minLength: 8 },
     fechaDeNacimiento: { type: Date, required: true },
     telefono: { type: String, required: true },
+    direccion : {type:String, required : true},
+    numeroDireccion:{type:String,required:true},
     codigoPostal: { type: String, required: true },
     tipoDeVivienda: { type: String, enum: ['casa', 'departamento'], required: true },
     conPatio: { type: Boolean, default: false, required: true },

@@ -26,7 +26,7 @@ const user = {
     create: async (req, res) => {
         try {
             const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
-                        
+    
             // Verifica si el username ya está registrado
             const existingUsername = await Users.findOne({ username });
             if (existingUsername) {
@@ -45,6 +45,21 @@ const user = {
                 return res.status(400).send({ message: "El DNI ya está registrado" });
             }
     
+            // Comprobación de que el nombre no contiene caracteres especiales
+            if (!/^[a-zA-Z\s]+$/.test(name)) {
+                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales" });
+            }
+    
+            // Comprobación de que el nombre no contiene números
+            if (/\d/.test(name)) {
+                return res.status(400).send({ message: "El nombre no puede contener números" });
+            }
+    
+            // Comprobación de que no todos los caracteres del nombre son iguales
+            if (/^([^\s])\1+$/.test(name)) {
+                return res.status(400).send({ message: "El nombre no puede contener todos los caracteres iguales" });
+            }
+    
             // Crea el nuevo usuario
             const newUser = await Users.create({
                 username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
@@ -55,6 +70,7 @@ const user = {
             httpError(res, e);
         }
     },
+    
     
     update: async (req, res) => {
         const { id } = req.params;

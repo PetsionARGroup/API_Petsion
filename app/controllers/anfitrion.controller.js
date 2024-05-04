@@ -34,6 +34,8 @@ const anfitrion = {
                 dni, 
                 fechaDeNacimiento, 
                 telefono, 
+                direccion,
+                numeroDireccion,
                 codigoPostal, 
                 tipoDeVivienda, 
                 conPatio, 
@@ -56,6 +58,7 @@ const anfitrion = {
                 tarifaBase, 
                 cancelaciones 
             } = req.body;
+            
             // Verifica si el username ya está registrado
             const existingUsername = await Anfitrions.findOne({ username });
             if (existingUsername) {
@@ -83,6 +86,8 @@ const anfitrion = {
                 dni, 
                 fechaDeNacimiento, 
                 telefono, 
+                direccion,
+                numeroDireccion,
                 codigoPostal, 
                 tipoDeVivienda, 
                 conPatio, 
@@ -103,7 +108,7 @@ const anfitrion = {
                 disponibilidadsabado,
                 disponibilidaddomingo,
                 tarifaBase, 
-                cancelaciones
+                cancelaciones 
             });
     
             res.status(201).send({ data: newAnfitrion });
