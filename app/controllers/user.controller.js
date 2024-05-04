@@ -26,7 +26,7 @@ const user = {
     create: async (req, res) => {
         try {
             const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
-    
+                        
             // Verifica si el username ya está registrado
             const existingUsername = await Users.findOne({ username });
             if (existingUsername) {
