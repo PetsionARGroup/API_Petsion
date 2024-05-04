@@ -63,13 +63,40 @@ const user = {
             if (!user) {
                 return res.status(404).send("Usuario no encontrado");
             }
+    
+            // Verifica si el username ya está registrado
+            if (req.body.username && req.body.username !== user.username) {
+                const existingUsername = await Users.findOne({ username: req.body.username });
+                if (existingUsername) {
+                    return res.status(400).send({ message: "El nombre de usuario ya está registrado" });
+                }
+            }
+    
+            // Verifica si el email ya está registrado
+            if (req.body.email && req.body.email !== user.email) {
+                const existingEmail = await Users.findOne({ email: req.body.email });
+                if (existingEmail) {
+                    return res.status(400).send({ message: "El correo electrónico ya está registrado" });
+                }
+            }
+    
+            // Verifica si el dni ya está registrado
+            if (req.body.dni && req.body.dni !== user.dni) {
+                const existingDNI = await Users.findOne({ dni: req.body.dni });
+                if (existingDNI) {
+                    return res.status(400).send({ message: "El DNI ya está registrado" });
+                }
+            }
+    
             // Actualiza las propiedades del usuario con req.body
             Object.assign(user, req.body);
+    
             // Guarda el usuario actualizado en la base de datos
             await user.save();
+    
             res.sendStatus(204);
         } catch (e) {
-            httpError(res,e)
+            httpError(res, e);
         }
     },
     modify: async (req, res) => {
@@ -80,14 +107,36 @@ const user = {
                 return res.status(404).send("Usuario no encontrado");
             }
     
-            // Actualiza solo las propiedades proporcionadas en req.body
-            Object.keys(req.body).forEach(key => {
-                user[key] = req.body[key];
-            });
+            // Verifica si el username ya está registrado
+            if (req.body.username && req.body.username !== user.username) {
+                const existingUsername = await Users.findOne({ username: req.body.username });
+                if (existingUsername) {
+                    return res.status(400).send({ message: "El nombre de usuario ya está registrado" });
+                }
+            }
+    
+            // Verifica si el email ya está registrado
+            if (req.body.email && req.body.email !== user.email) {
+                const existingEmail = await Users.findOne({ email: req.body.email });
+                if (existingEmail) {
+                    return res.status(400).send({ message: "El correo electrónico ya está registrado" });
+                }
+            }
+    
+            // Verifica si el dni ya está registrado
+            if (req.body.dni && req.body.dni !== user.dni) {
+                const existingDNI = await Users.findOne({ dni: req.body.dni });
+                if (existingDNI) {
+                    return res.status(400).send({ message: "El DNI ya está registrado" });
+                }
+            }
+    
+            // Actualiza las propiedades del usuario con req.body
+            Object.assign(user, req.body);
     
             // Guarda el usuario actualizado en la base de datos
             await user.save();
-            
+    
             res.sendStatus(204);
         } catch (e) {
             httpError(res, e);

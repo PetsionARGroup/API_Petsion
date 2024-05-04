@@ -9,7 +9,7 @@ const app = express(); // Crear objeto de aplicación Express
 app.use(cors());   // Habilitar CORS
 app.use(express.json());
 
-app.use('/api/1.0',require('./app/routes'))
+app.use(require('./app/routes'))
 
 dbConnect();
 
