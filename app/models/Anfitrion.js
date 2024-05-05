@@ -21,6 +21,7 @@ const AnfitrionSchema = new mongoose.Schema({
     distintoDueño : {type: Boolean, required : true},
     cantidadDeAnimales : {type : Number, require : true},
     admiteGato: { type: Boolean, required: true },
+    admitAlltypesMascotas : { type: Boolean, required: true },
     disponibilidadHoraria: { type: String, enum: ['Mañana', 'Tarde', 'Noche', 'Fulltime', 'Variable'], required: true },
     disponibilidadPaseo: { type: Boolean, required: true },
     disponibilidadlunes : { type: Boolean, required: true },

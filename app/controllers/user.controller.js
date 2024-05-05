@@ -26,49 +26,68 @@ const user = {
     create: async (req, res) => {
         try {
             const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
-    
+        
             // Verifica si el username ya está registrado
             const existingUsername = await Users.findOne({ username });
             if (existingUsername) {
                 return res.status(400).send({ message: "El nombre de usuario ya está registrado" });
             }
-    
+        
             // Verifica si el email ya está registrado
             const existingEmail = await Users.findOne({ email });
             if (existingEmail) {
                 return res.status(400).send({ message: "El correo electrónico ya está registrado" });
             }
-    
+        
             // Verifica si el dni ya está registrado
             const existingDNI = await Users.findOne({ dni });
             if (existingDNI) {
                 return res.status(400).send({ message: "El DNI ya está registrado" });
             }
-    
+        
             // Comprobación de que el nombre no contiene caracteres especiales
             if (!/^[a-zA-Z\s]+$/.test(name)) {
                 return res.status(400).send({ message: "El nombre no puede contener caracteres especiales" });
             }
-    
+        
             // Comprobación de que el nombre no contiene números
             if (/\d/.test(name)) {
                 return res.status(400).send({ message: "El nombre no puede contener números" });
             }
-    
+        
             // Comprobación de que no todos los caracteres del nombre son iguales
             if (/^([^\s])\1+$/.test(name)) {
                 return res.status(400).send({ message: "El nombre no puede contener todos los caracteres iguales" });
             }
-    
+        
+            // Comprobación de que el apellido no contiene caracteres especiales
+            if (!/^[a-zA-Z\s]+$/.test(lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales" });
+            }
+        
+            // Comprobación de que el apellido no contiene números
+            if (/\d/.test(lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener números" });
+            }
+        
+            // Comprobación de que no todos los caracteres del apellido son iguales
+            if (/^([^\s])\1+$/.test(lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener todos los caracteres iguales" });
+            }
+            // Verifica si el dni solo contiene números y no tiene espacios ni caracteres especiales
+            if (!/^\d+$/.test(dni)) {
+                return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
+            }
             // Crea el nuevo usuario
             const newUser = await Users.create({
                 username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
             });
-    
+        
             res.status(201).send({ data: newUser });
         } catch (e) {
             httpError(res, e);
         }
+        
     },
     
     
@@ -104,6 +123,41 @@ const user = {
                 }
             }
     
+            // Comprobación de que el nombre no contiene caracteres especiales
+            if (req.body.name && !/^[a-zA-Z\s]+$/.test(req.body.name)) {
+                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales" });
+            }
+    
+            // Comprobación de que el nombre no contiene números
+            if (req.body.name && /\d/.test(req.body.name)) {
+                return res.status(400).send({ message: "El nombre no puede contener números" });
+            }
+    
+            // Comprobación de que no todos los caracteres del nombre son iguales
+            if (req.body.name && /^([^\s])\1+$/.test(req.body.name)) {
+                return res.status(400).send({ message: "El nombre no puede contener todos los caracteres iguales" });
+            }
+    
+            // Comprobación de que el apellido no contiene caracteres especiales
+            if (req.body.lastname && !/^[a-zA-Z\s]+$/.test(req.body.lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales" });
+            }
+    
+            // Comprobación de que el apellido no contiene números
+            if (req.body.lastname && /\d/.test(req.body.lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener números" });
+            }
+    
+            // Comprobación de que no todos los caracteres del apellido son iguales
+            if (req.body.lastname && /^([^\s])\1+$/.test(req.body.lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener todos los caracteres iguales" });
+            }
+    
+            // Verifica si el dni solo contiene números y no tiene espacios ni caracteres especiales
+            if (req.body.dni && !/^\d+$/.test(req.body.dni)) {
+                return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
+            }
+    
             // Actualiza las propiedades del usuario con req.body
             Object.assign(user, req.body);
     
@@ -115,6 +169,7 @@ const user = {
             httpError(res, e);
         }
     },
+    
     modify: async (req, res) => {
         const { id } = req.params;
         try {
@@ -147,6 +202,41 @@ const user = {
                 }
             }
     
+            // Comprobación de que el nombre no contiene caracteres especiales
+            if (req.body.name && !/^[a-zA-Z\s]+$/.test(req.body.name)) {
+                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales" });
+            }
+    
+            // Comprobación de que el nombre no contiene números
+            if (req.body.name && /\d/.test(req.body.name)) {
+                return res.status(400).send({ message: "El nombre no puede contener números" });
+            }
+    
+            // Comprobación de que no todos los caracteres del nombre son iguales
+            if (req.body.name && /^([^\s])\1+$/.test(req.body.name)) {
+                return res.status(400).send({ message: "El nombre no puede contener todos los caracteres iguales" });
+            }
+    
+            // Comprobación de que el apellido no contiene caracteres especiales
+            if (req.body.lastname && !/^[a-zA-Z\s]+$/.test(req.body.lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales" });
+            }
+    
+            // Comprobación de que el apellido no contiene números
+            if (req.body.lastname && /\d/.test(req.body.lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener números" });
+            }
+    
+            // Comprobación de que no todos los caracteres del apellido son iguales
+            if (req.body.lastname && /^([^\s])\1+$/.test(req.body.lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener todos los caracteres iguales" });
+            }
+    
+            // Verifica si el dni solo contiene números y no tiene espacios ni caracteres especiales
+            if (req.body.dni && !/^\d+$/.test(req.body.dni)) {
+                return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
+            }
+    
             // Actualiza las propiedades del usuario con req.body
             Object.assign(user, req.body);
     
@@ -157,8 +247,7 @@ const user = {
         } catch (e) {
             httpError(res, e);
         }
-    },
-    
+    },  
     delete: async (req, res) => {
         const { id } = req.params;
         try {
