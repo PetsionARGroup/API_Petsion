@@ -6,7 +6,7 @@ const UsersSchema = new mongoose.Schema({
     name : { type:String , required : true , minLength: 3},
     lastname : {type:String , required : true , minLength: 3},
     email : { type:String , required : true },
-    dni : {type:String , required : true , minLength: 8},
+    dni : {type:String , required : true , minLength: 7},
     fechaDeNacimiento:{type:String , required : true },
     telefono : {type:String , required : true },
     codigoPostal:{type:String , required : true },

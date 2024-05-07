@@ -36,8 +36,13 @@ const anfitrion = {
     },
     searchPerrosM: async (req, res) => {
         try {
+            // Extrae el valor de 'admitePerrosM' del cuerpo de la solicitud
             const { admitePerrosM } = req.body;
+            // Define una consulta para buscar anfitriones que acepten perros medianos
+            // Si 'admitePerrosM' está definido en la solicitud y no es 'undefined', utiliza su valor
+            // Si no está definido, establece 'admitePerrosM' en 'true' para buscar todos los anfitriones que acepten perros medianos
             const query = { admitePerrosM: admitePerrosM !== undefined ? admitePerrosM : true };
+            // Ejecuta la consulta utilizando el modelo 'Anfitrions' y la consulta definida
             const anfitriones = await Anfitrions.find(query);
             res.status(200).json(anfitriones);
         } catch (error) {
