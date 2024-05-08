@@ -1,6 +1,5 @@
 const Anfitrions =require('../models/Anfitrion')
 const {httpError} = require('../helpers/handleError')
-const { modify } = require('./user.controller')
 const anfitrion = {
     list: async(req,res)=>{
         try{
@@ -23,46 +22,6 @@ const anfitrion = {
             httpError(res, e);
         }
     },
-    searchPerrosL: async (req, res) => {
-        try {
-            const { admitePerrosL } = req.body;
-            const query = { admitePerrosL: admitePerrosL !== undefined ? admitePerrosL : true };
-            const anfitriones = await Anfitrions.find(query);
-            res.status(200).json(anfitriones);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Error al buscar anfitriones que aceptan perros grandes' });
-        }
-    },
-    searchPerrosM: async (req, res) => {
-        try {
-            // Extrae el valor de 'admitePerrosM' del cuerpo de la solicitud
-            const { admitePerrosM } = req.body;
-            // Define una consulta para buscar anfitriones que acepten perros medianos
-            // Si 'admitePerrosM' está definido en la solicitud y no es 'undefined', utiliza su valor
-            // Si no está definido, establece 'admitePerrosM' en 'true' para buscar todos los anfitriones que acepten perros medianos
-            const query = { admitePerrosM: admitePerrosM !== undefined ? admitePerrosM : true };
-            // Ejecuta la consulta utilizando el modelo 'Anfitrions' y la consulta definida
-            const anfitriones = await Anfitrions.find(query);
-            res.status(200).json(anfitriones);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Error al buscar anfitriones que aceptan perros medianos' });
-        }
-    },
-    
-    searchPerrosS: async (req, res) => {
-        try {
-            const { admitePerrosS } = req.body;
-            const query = { admitePerrosS: admitePerrosS !== undefined ? admitePerrosS : true };
-            const anfitriones = await Anfitrions.find(query);
-            res.status(200).json(anfitriones);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Error al buscar anfitriones que aceptan perros pequeños' });
-        }
-    },
-    
     searchGatos: async (req, res) => {
         try {
             const { admiteGato } = req.body;
@@ -85,20 +44,17 @@ const anfitrion = {
             res.status(500).json({ error: 'Error al buscar anfitriones que admiten todo tipo de mascotas' });
         }
     },
-    
-    searchAdmitePerrosXL: async (req, res) => {
+    searchAdmitePerro: async (req, res) => {
         try {
-            const { admitePerrosXL } = req.body;
-            const query = { admitePerrosXL: admitePerrosXL !== undefined ? admitePerrosXL : true };
+            const { admitePerro } = req.body;
+            const query = { admitePerro: admitePerro !== undefined ? admitePerro : true };
             const anfitriones = await Anfitrions.find(query);
             res.status(200).json(anfitriones);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: 'Error al buscar anfitriones que admiten perros grandes' });
+            res.status(500).json({ error: 'Error al buscar anfitriones que admiten perros' });
         }
     },
-    
-
     create: async (req, res) => {
         try {
             const { 
@@ -115,16 +71,15 @@ const anfitrion = {
                 codigoPostal, 
                 tipoDeVivienda, 
                 conPatio, 
-                admitePerrosXL,
-                admitePerrosL,
-                admitePerrosM,
-                admitePerrosS,
                 distintoDueño, 
-                cantidadDeAnimales, 
+                cantidadDeAnimales,
+                admitePerro, 
                 admiteGato, 
                 admitAlltypesMascotas,
                 disponibilidadHoraria, 
-                disponibilidadPaseo, 
+                disponibilidadPaseo,
+                disponibilidadVisita,
+                disponibilidadAlojamiento, 
                 disponibilidadlunes,
                 disponibilidadmartes,
                 disponibilidadmiercoles,
@@ -204,16 +159,15 @@ const anfitrion = {
                 codigoPostal, 
                 tipoDeVivienda, 
                 conPatio, 
-                admitePerrosXL,
-                admitePerrosL,
-                admitePerrosM,
-                admitePerrosS,
                 distintoDueño, 
-                cantidadDeAnimales, 
+                cantidadDeAnimales,
+                admitePerro, 
                 admiteGato, 
                 admitAlltypesMascotas,
                 disponibilidadHoraria, 
-                disponibilidadPaseo, 
+                disponibilidadPaseo,
+                disponibilidadVisita,
+                disponibilidadAlojamiento, 
                 disponibilidadlunes,
                 disponibilidadmartes,
                 disponibilidadmiercoles,
@@ -222,7 +176,7 @@ const anfitrion = {
                 disponibilidadsabado,
                 disponibilidaddomingo,
                 tarifaBase, 
-                cancelaciones  
+                cancelaciones   
             });
     
             res.status(201).send({ data: newAnfitrion });

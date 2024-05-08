@@ -1,5 +1,8 @@
 const Users= require('../models/User')
-const {httpError}=require('../helpers/handleError')
+const {httpError, unauthorizedError}=require('../helpers/handleError')
+const {encrypt , compare} = require ('../helpers/handlePassword')
+const {tokenSign, verifyToken} = require ('../helpers/handleJwt')
+
 const user = {
     list: async(req,res)=>{
         try{
@@ -23,7 +26,7 @@ const user = {
         }
     },
    
-    create: async (req, res) => {
+    register: async (req, res) => {
         try {
             const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
         
@@ -78,16 +81,58 @@ const user = {
             if (!/^\d+$/.test(dni)) {
                 return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
             }
-            // Crea el nuevo usuario
-            const newUser = await Users.create({
-                username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
+            const passwordHash = await encrypt(password)
+
+            let newUser;
+            try {
+            newUser = await Users.create({
+                username, password: passwordHash, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
             });
-        
-            res.status(201).send({ data: newUser });
+            } catch (creationError) {
+            // Si se produce un error al crear el usuario, lógica para borrarlo
+            if (newUser) {
+                await Users.findByIdAndDelete(newUser._id);
+            }
+            throw creationError; // Lanza el error para que sea manejado en el bloque catch exterior
+            }
+
+            newUser.set("password", undefined, { strict: false });
+            const data = {
+                token: await tokenSign(newUser),
+               user: newUser
+            };
+            res.status(201).send({ data });
         } catch (e) {
             httpError(res, e);
         }
         
+    },
+
+    login : async (req,res) => {
+        try{
+            const {username ,password} = req.body
+            const user = await Users.findOne({username}).select('password name role email')
+            if(!user){
+                httpError(res, "Usuario no existe", 404);
+                return
+            }
+            const hashPassword = user.password
+            const check = await compare (password,hashPassword)
+            if(!check){
+                res.status(401).send({error: 'Password invalido'});
+                return
+            }
+            user.set ('password',undefined,{strict : false})
+            const data = {
+                token: await tokenSign(user),
+                user
+            }
+
+            res.send({data})
+        }catch(e){
+
+            httpError(res, e);
+        }
     },
     
     

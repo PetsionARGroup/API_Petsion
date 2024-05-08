@@ -9,11 +9,8 @@ router.post('/', anfitrion.create)
 router.put('/:id', anfitrion.update)
 router.patch('/:id', anfitrion.modify)
 router.delete('/:id', anfitrion.delete)
-router.post('/perronotangrande', anfitrion.searchPerrosL);
-router.post('/perromediano', anfitrion.searchPerrosM);
-router.post('/perropeque', anfitrion.searchPerrosS);
+router.post('/perros', anfitrion.searchAdmitePerro);
 router.post('/gatos', anfitrion.searchGatos);
-router.post('/perrogrande', anfitrion.searchAdmitePerrosXL);
 router.post('/todoslostipos', anfitrion.searchAdmitAlltypesMascotas);
 
 module.exports = router
