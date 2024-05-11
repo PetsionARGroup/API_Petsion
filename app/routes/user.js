@@ -3,7 +3,7 @@ const router = express.Router()
 const user = require('../controllers/user.controller')
 const {validateJwt} = require ('../middleware/session')
 
-router.get('/',validateJwt, user.list)
+router.get('/', user.list)
 router.get('/:id', user.get)
 router.post('/register', user.register)
 router.post('/login', user.login)
