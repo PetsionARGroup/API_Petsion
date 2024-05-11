@@ -31,9 +31,9 @@ const AnfitrionSchema = new mongoose.Schema({
     disponibilidadsabado: { type: Boolean, required: true },
     disponibilidaddomingo: { type: Boolean, required: true },
     tarifaBase: {type:Number, required:true},
-    cancelaciones:{ type: Boolean, required: true }
-
-
+    cancelaciones:{ type: Boolean, required: true },
+    role : {type: String, default : 'anfitrion'}
+    
 });
 
 

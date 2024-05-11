@@ -1,7 +1,10 @@
 const Anfitrions =require('../models/Anfitrion')
 const {httpError} = require('../helpers/handleError')
+const { register } = require('./user.controller')
+const {encrypt , compare} = require ('../helpers/handlePassword')
+const { tokenSign } = require('../helpers/handleJwt')
 const anfitrion = {
-    list: async(req,res)=>{
+    list: async(req,res,next)=>{
         try{
             const listAll = await Anfitrions.find({})
             res.send({data : listAll})
@@ -55,7 +58,7 @@ const anfitrion = {
             res.status(500).json({ error: 'Error al buscar anfitriones que admiten perros' });
         }
     },
-    create: async (req, res) => {
+    register: async (req, res) => {
         try {
             const { 
                 username, 
@@ -143,11 +146,14 @@ const anfitrion = {
             if (!/^\d+$/.test(dni)) {
                 return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
             }
-    
-            // Crea el nuevo anfitrión
-            const newAnfitrion = await Anfitrions.create({
+
+            const passwordHash = await encrypt(password)
+
+            let newAnfitrion;
+            try{
+            newAnfitrion = await Anfitrions.create({
                 username, 
-                password, 
+                password : passwordHash, 
                 name, 
                 lastname, 
                 email, 
@@ -178,8 +184,18 @@ const anfitrion = {
                 tarifaBase, 
                 cancelaciones   
             });
-    
-            res.status(201).send({ data: newAnfitrion });
+            }catch(creationError){
+                if(newAnfitrion){
+                    await Anfitrions.findByIdAndDelete(newAnfitrion._id);
+                }
+                throw creationError;
+            }
+            newAnfitrion.set("password", undefined,{stritc:false})
+            const data = {
+                token : await tokenSign(newAnfitrion),
+                anfitrion : newAnfitrion
+            }
+            res.status(201).send({ data});
         } catch (e) {
             httpError(res, e);
         }

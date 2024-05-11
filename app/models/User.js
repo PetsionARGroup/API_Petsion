@@ -10,6 +10,7 @@ const UsersSchema = new mongoose.Schema({
     fechaDeNacimiento:{type:String , required : true },
     telefono : {type:String , required : true },
     codigoPostal:{type:String , required : true },
+    role:{type:String, default : 'user'}
 })
 
 module.exports= mongoose.model('User', UsersSchema)
