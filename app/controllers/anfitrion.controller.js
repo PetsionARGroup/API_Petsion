@@ -201,6 +201,32 @@ const anfitrion = {
         }
     },
     
+    login : async (req,res) => {
+        try{
+            const {username ,password} = req.body
+            const anfitrion = await Anfitrions.findOne({username}).select('password name role email')
+            if(!anfitrion){
+                httpError(res, "Usuario no existe", 404);
+                return
+            }
+            const hashPassword = anfitrion.password
+            const check = await compare (password,hashPassword)
+            if(!check){
+                res.status(401).send({error: 'Password invalido'});
+                return
+            }
+            anfitrion.set ('password',undefined,{strict : false})
+            const data = {
+                token: await tokenSign(anfitrion),
+                anfitrion
+            }
+
+            res.send({data})
+        }catch(e){
+
+            httpError(res, e);
+        }
+    },
     
     update: async (req, res) => {
         const { id } = req.params;
