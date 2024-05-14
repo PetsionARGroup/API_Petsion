@@ -77,35 +77,34 @@ const user = {
             if (/^([^\s])\1+$/.test(lastname)) {
                 return res.status(400).send({ message: "El apellido no puede contener todos los caracteres iguales" });
             }
+    
             // Verifica si el dni solo contiene números y no tiene espacios ni caracteres especiales
             if (!/^\d+$/.test(dni)) {
                 return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
             }
-            const passwordHash = await encrypt(password)
     
-            let newUser;
-            try {
-                newUser = await Users.create({
-                    username, password: passwordHash, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
-                });
-            } catch (creationError) {
-                // Si se produce un error al crear el usuario, lógica para borrarlo
-                if (newUser && newUser._id) {
-                    await Users.findByIdAndDelete(newUser._id);
-                }
-                throw creationError; // Lanza el error para que sea manejado en el bloque catch exterior
-            }
+            const passwordHash = await encrypt(password);
+    
+            // Crea un nuevo usuario
+            const newUser = await Users.create({
+                username, password: passwordHash, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
+            });
     
             newUser.set("password", undefined, { strict: false });
+    
             const data = {
                 token: await tokenSign(newUser),
                 user: newUser
             };
+    
             res.status(201).send({ data });
-        } catch (e) {
-            httpError(res, e);
+        } catch (error) {
+            // Manejo de errores
+            console.error("Error al registrar usuario:", error);
+            res.status(500).send({ message: "Error interno del servidor" });
         }
     },
+    
     
 
     login : async (req,res) => {
