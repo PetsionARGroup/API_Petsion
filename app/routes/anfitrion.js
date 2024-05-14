@@ -6,7 +6,7 @@ const {validateJwt} = require ('../middleware/session')
 
 router.get('/', anfitrion.list)
 router.get('/:id', anfitrion.get)
-router.post('/', anfitrion.register)
+router.post('/register', anfitrion.register)
 router.post('/login', anfitrion.login)
 router.put('/:id', anfitrion.update)
 router.patch('/:id', anfitrion.modify)
