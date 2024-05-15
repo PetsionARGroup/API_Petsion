@@ -110,12 +110,6 @@ const user = {
 
     login : async (req,res) => {
         try{
-            const data2 = {
-                token:"kasdasdjasdjafs",// await tokenSign(user),
-                //user
-            }
-
-            res.send({data2})
             const {username ,password} = req.body
             const user = await Users.findOne({username}).select('password name role email')
             if(!user){
@@ -130,7 +124,7 @@ const user = {
             }
             user.set ('password',undefined,{strict : false})
             const data = {
-                token:"kasdasdjasdjafs",// await tokenSign(user),
+                token:await tokenSign(user),
                 user
             }
 
