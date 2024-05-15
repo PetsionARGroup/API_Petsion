@@ -14,5 +14,6 @@ router.delete('/:id', anfitrion.delete)
 router.post('/perros', anfitrion.searchAdmitePerro);
 router.post('/gatos', anfitrion.searchGatos);
 router.post('/todoslostipos', anfitrion.searchAdmitAlltypesMascotas);
+router.post('/filtrado', anfitrion.searchAnfitrionByCriteria);
 
 module.exports = router
