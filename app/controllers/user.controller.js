@@ -112,7 +112,7 @@ const user = {
         try{
             const data2 = {
                 token:"kasdasdjasdjafs",// await tokenSign(user),
-                user
+                //user
             }
 
             res.send({data2})
