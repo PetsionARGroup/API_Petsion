@@ -124,7 +124,7 @@ const user = {
             }
             user.set ('password',undefined,{strict : false})
             const data = {
-                token: await tokenSign(user),
+                token:"kasdasdjasdjafs",// await tokenSign(user),
                 user
             }
 
