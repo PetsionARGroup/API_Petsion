@@ -170,7 +170,7 @@ const user = {
                 username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
             });
     
-            newUser.set("password", undefined, { strict: false });
+            //newUser.set("password", undefined, { strict: false });
     
             res.status(201).send({ user: newUser });
         } catch (e) {
