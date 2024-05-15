@@ -26,7 +26,7 @@ const user = {
         }
     },
    
-    /*register: async (req, res) => {
+    register: async (req, res) => {
         try {
             const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
         
@@ -106,8 +106,8 @@ const user = {
             httpError(res, e);
         }
         
-    },*/
-    register: async (req, res) => {
+    },
+    /*register: async (req, res) => {
         try {
             const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
         
@@ -176,7 +176,7 @@ const user = {
         } catch (e) {
             httpError(res, e);
         }
-    },
+    },*/
     
 
     login : async (req,res) => {
