@@ -402,7 +402,7 @@ const anfitrion = {
             res.status(500).send("Error al eliminar usuario");
         }
     },
-    searchAnfitrionByCriteria: async (req, res) => {
+    /*searchAnfitrionByCriteria: async (req, res) => {
         try {
             const {
                 admitePerro,
@@ -489,9 +489,98 @@ const anfitrion = {
             console.error(error);
             res.status(500).json({ error: 'Error al buscar anfitriones con los criterios especificados' });
         }
-    },
+    },*/
     
-    
+    searchAnfitrionByCriteria: async (req, res) => {
+    try {
+        const {
+            admitePerro,
+            admiteGato,
+            admiteAlltypesMascotas,
+            disponibilidadAlojamiento,
+            disponibilidadPaseo,
+            disponibilidadVisita,
+            disponibilidadlunes,
+            disponibilidadmartes,
+            disponibilidadmiercoles,
+            disponibilidadjueves,
+            disponibilidadviernes,
+            disponibilidadsabado,
+            disponibilidaddomingo,
+            disponibilidadHoraria
+        } = req.body;
+
+        // Construir el query inicial con filtros básicos
+        let query = {};
+
+        // Validar que solo un servicio sea seleccionado
+        if (disponibilidadAlojamiento) {
+            query.disponibilidadAlojamiento = disponibilidadAlojamiento;
+        } else if (disponibilidadPaseo) {
+            query.disponibilidadPaseo = disponibilidadPaseo;
+        } else if (disponibilidadVisita) {
+            query.disponibilidadVisita = disponibilidadVisita;
+        } else {
+            return res.status(400).json({ error: 'Debe seleccionar al menos un servicio (alojamiento, paseo, visita)' });
+        }
+
+        // Validar que solo un tipo de mascota sea seleccionado, considerando el caso de todas las mascotas
+        if (admiteAlltypesMascotas) {
+            query.$or = [
+                { admitePerro: true },
+                { admiteGato: true },
+                { admiteAlltypesMascotas: true }
+            ];
+        } else if (admitePerro) {
+            query.admitePerro = admitePerro;
+        } else if (admiteGato) {
+            query.admiteGato = admiteGato;
+        } else {
+            return res.status(400).json({ error: 'Debe seleccionar al menos un tipo de mascota (perro, gato, todas las mascotas)' });
+        }
+
+        // Filtros de disponibilidad por día
+        if (disponibilidadlunes) {
+            query.disponibilidadlunes = true;
+        } else if (disponibilidadmartes) {
+            query.disponibilidadmartes = true;
+        } else if (disponibilidadmiercoles) {
+            query.disponibilidadmiercoles = true;
+        } else if (disponibilidadjueves) {
+            query.disponibilidadjueves = true;
+        } else if (disponibilidadviernes) {
+            query.disponibilidadviernes = true;
+        } else if (disponibilidadsabado) {
+            query.disponibilidadsabado = true;
+        } else if (disponibilidaddomingo) {
+            query.disponibilidaddomingo = true;
+        }
+
+        // Filtro de disponibilidad horaria
+        if (disponibilidadHoraria && disponibilidadHoraria !== 'Variable') {
+            // Si la disponibilidadHoraria no es 'Variable', se busca exactamente esa disponibilidad
+            query.disponibilidadHoraria = disponibilidadHoraria;
+        } else if (disponibilidadHoraria === 'Fulltime') {
+            // Si la disponibilidadHoraria es 'Fulltime', se buscan todos los anfitriones sin importar la disponibilidad horaria
+            // No es necesario agregar nada al query en este caso
+        } else {
+            // Si la disponibilidadHoraria es 'Variable', se buscan aquellos anfitriones que tengan cualquier disponibilidad horaria
+            query.disponibilidadHoraria = { $in: ['Mañana', 'Tarde', 'Noche'] };
+        }
+
+        // Log the query to see what is being sent to the database
+        console.log("Query:", query);
+
+        // Buscar anfitriones en la base de datos con los filtros aplicados
+        const anfitriones = await Anfitrions.find(query);
+        console.log("Anfitriones encontrados:", anfitriones);
+        res.status(200).json(anfitriones);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al buscar anfitriones con los criterios especificados' });
+    }
+}
+
     
     
     
