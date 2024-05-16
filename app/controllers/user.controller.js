@@ -13,9 +13,25 @@ const user = {
             httpError(res,e)
         }
     },
-    get: async(req,res)=>{
+    /*get: async(req,res)=>{
         try {
             const { id } = req.params;
+            const user = await Users.findById(id);
+            if (!user) {
+                return res.status(404).send({ message: "Usuario no encontrado" });
+            }
+            res.status(200).send(user);
+        } catch (e) {
+            httpError(res, e);
+        }
+    },*/
+    get: async (req, res) => {
+        try {
+            const { id } = req.params;
+            // Verifica si el id es un ObjectId válido antes de intentar buscar el usuario
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).send({ message: "ID inválido" });
+            }
             const user = await Users.findById(id);
             if (!user) {
                 return res.status(404).send({ message: "Usuario no encontrado" });
