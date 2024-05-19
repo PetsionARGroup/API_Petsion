@@ -1,7 +1,10 @@
 const Users= require('../models/User')
 const {httpError, unauthorizedError}=require('../helpers/handleError')
 const {encrypt , compare} = require ('../helpers/handlePassword')
-const {tokenSign, verifyToken} = require ('../helpers/handleJwt')
+const {tokenSign} = require ('../helpers/handleJwt')
+const {enviarCorreoConfirmacion}= require ('../helpers/handleMail')
+const JWT_SECRET = process.env.JWT_SECRET;
+const jwt = require ('jsonwebtoken')
 
 const user = {
     list: async(req,res)=>{
@@ -95,89 +98,21 @@ const user = {
             }
             throw creationError; // Lanza el error para que sea manejado en el bloque catch exterior
             }
-
+            
             newUser.set("password", undefined, { strict: false });
             const data = {
                 token: await tokenSign(newUser),
                user: newUser
             };
+            const confirmationToken = data.token
+            await enviarCorreoConfirmacion(newUser.email, confirmationToken)
+
             res.status(201).send({ data });
         } catch (e) {
             httpError(res, e);
         }
         
     },
-    /*register: async (req, res) => {
-        try {
-            const { username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal } = req.body;
-        
-            // Verifica si el username ya está registrado
-            const existingUsername = await Users.findOne({ username });
-            if (existingUsername) {
-                return res.status(400).send({ message: "El nombre de usuario ya está registrado" });
-            }
-        
-            // Verifica si el email ya está registrado
-            const existingEmail = await Users.findOne({ email });
-            if (existingEmail) {
-                return res.status(400).send({ message: "El correo electrónico ya está registrado" });
-            }
-        
-            // Verifica si el dni ya está registrado
-            const existingDNI = await Users.findOne({ dni });
-            if (existingDNI) {
-                return res.status(400).send({ message: "El DNI ya está registrado" });
-            }
-        
-            // Comprobación de que el nombre no contiene caracteres especiales
-            if (!/^[a-zA-Z\s]+$/.test(name)) {
-                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales" });
-            }
-        
-            // Comprobación de que el nombre no contiene números
-            if (/\d/.test(name)) {
-                return res.status(400).send({ message: "El nombre no puede contener números" });
-            }
-        
-            // Comprobación de que no todos los caracteres del nombre son iguales
-            if (/^([^\s])\1+$/.test(name)) {
-                return res.status(400).send({ message: "El nombre no puede contener todos los caracteres iguales" });
-            }
-        
-            // Comprobación de que el apellido no contiene caracteres especiales
-            if (!/^[a-zA-Z\s]+$/.test(lastname)) {
-                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales" });
-            }
-        
-            // Comprobación de que el apellido no contiene números
-            if (/\d/.test(lastname)) {
-                return res.status(400).send({ message: "El apellido no puede contener números" });
-            }
-        
-            // Comprobación de que no todos los caracteres del apellido son iguales
-            if (/^([^\s])\1+$/.test(lastname)) {
-                return res.status(400).send({ message: "El apellido no puede contener todos los caracteres iguales" });
-            }
-            
-            // Verifica si el dni solo contiene números y no tiene espacios ni caracteres especiales
-            if (!/^\d+$/.test(dni)) {
-                return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
-            }
-    
-            // Aquí se pueden agregar más validaciones si es necesario
-    
-            const newUser = await Users.create({
-                username, password, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
-            });
-    
-            //newUser.set("password", undefined, { strict: false });
-    
-            res.status(201).send({ user: newUser });
-        } catch (e) {
-            httpError(res, e);
-        }
-    },*/
-    
 
     login : async (req,res) => {
         try{
@@ -378,7 +313,24 @@ const user = {
             console.error(error);
             res.status(500).send("Error al eliminar usuario");
         }
+    },
+    // En el controlador de usuario (user.controller.js)
+    confirmarCuenta: async (req, res) => {
+    try {
+        const token = req.params.token;
+        // Verificar si el token es válido (puedes utilizar jwt.verify)
+        const decoded = jwt.verify(token, JWT_SECRET);
+        // Extraer el ID de usuario del token decodificado
+        const userId = decoded._id;
+        // Actualizar el usuario en la base de datos para establecer validate a true
+        await Users.findByIdAndUpdate(userId, { validarCorreo: true });
+        res.send('¡Cuenta confirmada con éxito!');
+    } catch (error) {
+        console.error('Error al confirmar cuenta:', error);
+        res.status(400).send('Error al confirmar cuenta. El token podría ser inválido o expirado.');
     }
+}
+
     
       
 }
