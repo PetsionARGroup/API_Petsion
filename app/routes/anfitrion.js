@@ -15,5 +15,6 @@ router.post('/perros', anfitrion.searchAdmitePerro);
 router.post('/gatos', anfitrion.searchGatos);
 router.post('/todoslostipos', anfitrion.searchAdmitAlltypesMascotas);
 router.post('/filtrado', anfitrion.searchAnfitrionByCriteria);
+router.get('/confirmar/:token', anfitrion.confirmarCuenta)
 
 module.exports = router
