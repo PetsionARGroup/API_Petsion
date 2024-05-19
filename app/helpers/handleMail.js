@@ -9,7 +9,7 @@ const enviarCorreoConfirmacion = async (email, token) => {
             to: email,
             subject: 'Confirmación de cuenta',
             html: `<p>¡Gracias por registrarte! Por favor haz clic en el siguiente enlace para confirmar tu cuenta:</p>
-                   <p><a href="http://localhost:3000/user/confirmar/${token}">Confirmar cuenta</a></p>`
+                   <p><a href="https://api-petsion.onrender.com/user/confirmar/${token}">Confirmar cuenta</a></p>`
         };
 
         // Envía el correo electrónico
