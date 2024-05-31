@@ -13,6 +13,10 @@ const mascotaController = {
             if (!usuarioEncontrado) {
                 return res.status(404).json({ message: 'Usuario no encontrado' });
             }
+            const existingname = await Mascota.findOne({ user , nombre });
+            if (existingname) {
+                return res.status(400).send({ message: "El nombre de la mascota ya está registrado" });
+            }
             
             const mascota = new Mascota ({
                 user : usuarioEncontrado,
