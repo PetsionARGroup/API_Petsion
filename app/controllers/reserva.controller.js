@@ -1,35 +1,43 @@
 const Reserva = require('../models/Reserva');
 const User = require('../models/User');
 const Anfitrion = require('../models/Anfitrion');
+const user = require('./user.controller');
 
 const reservaController = {
     create: async (req, res) => {
         try {
-            // Extraer userId, anfitrionId y mensaje del cuerpo de la solicitud
-            const { user, anfitrion, mensaje } = req.body;
-    
+            // Extraer los datos del cuerpo de la solicitud
+            const { user, usuarioNombre, anfitrion, tipoDeServicio, fechaDeEntrada, fechaDeSalida, horarioDeEntrada, horarioDeSalida, mascotasCuidado, mensaje } = req.body;
+
             // Verificar si los IDs de usuario y anfitrión son válidos
-            const usuarioEncontrado = await User.findById(user); // Cambiado de usuario a user
-            const anfit = await Anfitrion.findById(anfitrion);
-    
+            const usuarioEncontrado = await User.findById(user);
+            const anfitrionEncontrado = await Anfitrion.findById(anfitrion);
+
             // Si alguno de los documentos no existe, devolver un error 404
-            if (!usuarioEncontrado) { // Cambiado de user a usuarioEncontrado
+            if (!usuarioEncontrado) {
                 return res.status(404).json({ message: 'Usuario no encontrado' });
             }
-            if (!anfit) {
-                return res.status(404).json({ message: 'Anfitrion no encontrado' });
+            if (!anfitrionEncontrado) {
+                return res.status(404).json({ message: 'Anfitrión no encontrado' });
             }
-    
+
             // Crear una nueva instancia de Reserva con los datos proporcionados
             const reserva = new Reserva({
-                user: usuarioEncontrado._id, // Cambiado de user a usuarioEncontrado
-                anfitrion: anfit._id, // Cambiado de anfitrion a anfit
+                user: usuarioEncontrado._id,
+                usuarioNombre,
+                anfitrion: anfitrionEncontrado._id,
+                tipoDeServicio,
+                fechaDeEntrada,
+                fechaDeSalida,
+                horarioDeEntrada,
+                horarioDeSalida,
+                mascotasCuidado,
                 mensaje
             });
-    
+
             // Guardar la reserva en la base de datos
             await reserva.save();
-    
+
             // Devolver la respuesta con el objeto de reserva creado y el estado 201 (Created)
             res.status(201).json(reserva);
         } catch (error) {
@@ -42,22 +50,29 @@ const reservaController = {
 
     confirmar: async (req, res) => {
         try {
-            const { confirmado } = req.body;
-            const { id } = req.params;
+            const { confirmado } = req.body;  // Recibir el atributo confirmado del cuerpo de la solicitud
+            const { id } = req.body;
+    
+            // Validar que el atributo confirmado esté presente y sea un booleano
+            if (typeof confirmado !== 'boolean') {
+                return res.status(400).json({ message: 'El atributo "confirmado" es requerido y debe ser un booleano' });
+            }
     
             // Encontrar la reserva por su ID
             const reserva = await Reserva.findById(id);
     
             // Verificar si la reserva existe
             if (!reserva) {
-                return res.status(404).json({ message: 'Reserva not found' });
+                return res.status(404).json({ message: 'Reserva no encontrada' });
             }
     
-            // Establecer el atributo confirmado como true
-            reserva.confirmado = true;
-            
-            // Guardar los cambios en la base de datos
-            await reserva.save();
+            // Modificar el atributo confirmado solo si es diferente al actual
+            if (reserva.confirmado !== confirmado) {
+                reserva.confirmado = confirmado;
+                
+                // Guardar los cambios en la base de datos
+                await reserva.save();
+            }
     
             // Responder con la reserva actualizada
             res.status(200).json(reserva);
@@ -81,8 +96,25 @@ const reservaController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
+    },
+    listarReservasUser: async (req, res) => {
+        try {
+            const { user } = req.body;
+    
+            const reservas = await Reserva.find({ user: user })
+                
+    
+            if (!reservas.length) {
+                return res.status(404).json({ message: 'No se encontraron reservas' });
+            }
+    
+            res.status(200).json(reservas);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
     }
     
 };
+
 
 module.exports = reservaController;
