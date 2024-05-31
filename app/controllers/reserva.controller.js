@@ -2,6 +2,7 @@ const Reserva = require('../models/Reserva');
 const User = require('../models/User');
 const Anfitrion = require('../models/Anfitrion');
 const user = require('./user.controller');
+const Mascota = require ('../models/Mascota')
 
 const reservaController = {
     create: async (req, res) => {
@@ -20,6 +21,10 @@ const reservaController = {
             if (!anfitrionEncontrado) {
                 return res.status(404).json({ message: 'Anfitrión no encontrado' });
             }
+            const mascotas = await Mascota.find({ _id: { $in: mascotasCuidado } });
+            if (mascotas.length !== mascotasCuidado.length) {
+                return res.status(404).json({ message: 'Una o más mascotas no fueron encontradas' });
+            }
 
             // Crear una nueva instancia de Reserva con los datos proporcionados
             const reserva = new Reserva({
@@ -31,7 +36,7 @@ const reservaController = {
                 fechaDeSalida,
                 horarioDeEntrada,
                 horarioDeSalida,
-                mascotasCuidado,
+                mascotasCuidado: mascotas.map(mascota => mascota._id),
                 mensaje
             });
 
@@ -86,7 +91,13 @@ const reservaController = {
             const { anfitrion } = req.body;
     
             const reservas = await Reserva.find({ anfitrion: anfitrion })
-                
+                .populate('user') // Llenar el campo 'user' con el objeto completo
+                .populate({
+                    path: 'anfitrion',
+                    select: '-validarCorreo -password -username ' // Excluir el campo 'password' del objeto 'anfitrion'
+
+                })
+                .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
     
             if (!reservas.length) {
                 return res.status(404).json({ message: 'No se encontraron reservas' });
@@ -102,7 +113,9 @@ const reservaController = {
             const { user } = req.body;
     
             const reservas = await Reserva.find({ user: user })
-                
+            .populate('user') // Llenar el campo 'user' con el objeto completo
+            .populate('anfitrion') // Llenar el campo 'anfitrion' con el objeto completo
+            .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos    
     
             if (!reservas.length) {
                 return res.status(404).json({ message: 'No se encontraron reservas' });
