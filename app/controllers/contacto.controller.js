@@ -1,10 +1,11 @@
 const Contacto  = require ('../models/Contacto')
+const {enviarCorreoContacto} = require('../helpers/handleMailContacto')
 
 
 const contactoController = {
     create : async (req , res) =>{
         try {
-            const { email , mensaje , fechaCreacion} = req.body;
+            const { email , mensaje } = req.body;
             
             const validateEmail = (email) => {
                 const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -16,9 +17,9 @@ const contactoController = {
             const nuevoContacto = new Contacto({
                 email,
                 mensaje,
-                fechaCreacion: fechaCreacion || new Date(),
                 respondido: false // Valor por defecto
             });
+            await enviarCorreoContacto (nuevoContacto.email,nuevoContacto.mensaje)
 
             // Guardar el contacto en la base de datos
             await nuevoContacto.save();
@@ -29,7 +30,16 @@ const contactoController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
+    },
+    list: async(req,res,next)=>{
+        try{
+            const listAll = await Contacto.find({})
+            res.send({data : listAll})
+        }
+        catch(e){
+            httpError(res,e)
+        }
+    },
 }
 
 module.exports = contactoController;

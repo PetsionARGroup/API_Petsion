@@ -91,12 +91,32 @@ const reservaController = {
             const { anfitrion } = req.body;
     
             const reservas = await Reserva.find({ anfitrion: anfitrion })
-                .populate('user') // Llenar el campo 'user' con el objeto completo
                 .populate({
-                    path: 'anfitrion',
-                    select: '-validarCorreo -password -username ' // Excluir el campo 'password' del objeto 'anfitrion'
-
-                })
+                    path: 'user',
+                    select:' -role -validarCorreo -_id -username -password -email -dni -fechaDeNacimiento -telefono -codigoPostal -__v -email'
+                }) // Llenar el campo 'user' con el objeto completo
+                .select('-anfitrion')
+                .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
+    
+            if (!reservas.length) {
+                return res.status(404).json({ message: 'No se encontraron reservas' });
+            }
+    
+            res.status(200).json(reservas);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    listarReservasConfirmado: async (req, res) => {
+        try {
+            const { anfitrion } = req.body;
+    
+            const reservas = await Reserva.find({ anfitrion: anfitrion ,confirmado : true })
+                .populate({
+                    path: 'user',
+                    select:' -role -validarCorreo -_id -username -password -dni -fechaDeNacimiento -codigoPostal -__v'
+                }) // Llenar el campo 'user' con el objeto completo
+                .select('-anfitrion')
                 .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
     
             if (!reservas.length) {
@@ -113,8 +133,34 @@ const reservaController = {
             const { user } = req.body;
     
             const reservas = await Reserva.find({ user: user })
-            .populate('user') // Llenar el campo 'user' con el objeto completo
-            .populate('anfitrion') // Llenar el campo 'anfitrion' con el objeto completo
+            .select('-user') // Llenar el campo 'user' con el objeto completo
+            .populate({
+                path: 'anfitrion',
+                select: '-validarCorreo -password -username -_id -dni -fechaDeNacimiento -telefono -numeroDireccion -codigoPostal -conPatio -distintoDueño -cantidadDeAnimales -admitePerro -admiteGato -admitAlltypesMascotas -disponibilidadHoraria -disponibilidadPaseo -disponibilidadVisita -disponibilidadAlojamiento -disponibilidadlunes -disponibilidadmartes -disponibilidadmiercoles -disponibilidadjueves -disponibilidadviernes -disponibilidadsabado -disponibilidaddomingo -tarifabase -cancelaciones -role -__v -email' // Excluir el campo 'password' del objeto 'anfitrion'
+
+            })
+            .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos    
+    
+            if (!reservas.length) {
+                return res.status(404).json({ message: 'No se encontraron reservas' });
+            }
+    
+            res.status(200).json(reservas);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    listarReservasUserConfirmado: async (req, res) => {
+        try {
+            const { user } = req.body;
+    
+            const reservas = await Reserva.find({ user: user , confirmado : true})
+            .select('-user') // Llenar el campo 'user' con el objeto completo
+            .populate({
+                path: 'anfitrion',
+                select: '-validarCorreo -password -username -_id -dni -fechaDeNacimiento -numeroDireccion -codigoPostal -conPatio -distintoDueño -cantidadDeAnimales -admitePerro -admiteGato -admitAlltypesMascotas -disponibilidadHoraria -disponibilidadPaseo -disponibilidadVisita -disponibilidadAlojamiento -disponibilidadlunes -disponibilidadmartes -disponibilidadmiercoles -disponibilidadjueves -disponibilidadviernes -disponibilidadsabado -disponibilidaddomingo -tarifabase -cancelaciones -role -__v ' // Excluir el campo 'password' del objeto 'anfitrion'
+
+            })
             .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos    
     
             if (!reservas.length) {
