@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 
 const ReservaSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    usuarioNombre: { type: String, required: true },
     anfitrion: { type: Schema.Types.ObjectId, ref: 'Anfitrion', required: true },
     tipoDeServicio: { type: String, enum: ['Paseo', 'Cuidado de día', 'Alojamiento'], required: true },
     fechaDeEntrada: { type: Date, required: true },

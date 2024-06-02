@@ -8,7 +8,7 @@ const reservaController = {
     create: async (req, res) => {
         try {
             // Extraer los datos del cuerpo de la solicitud
-            const { user, usuarioNombre, anfitrion, tipoDeServicio, fechaDeEntrada, fechaDeSalida, horarioDeEntrada, horarioDeSalida, mascotasCuidado, mensaje } = req.body;
+            const { user, anfitrion, tipoDeServicio, fechaDeEntrada, fechaDeSalida, horarioDeEntrada, horarioDeSalida, mascotasCuidado, mensaje } = req.body;
 
             // Verificar si los IDs de usuario y anfitrión son válidos
             const usuarioEncontrado = await User.findById(user);
@@ -29,7 +29,6 @@ const reservaController = {
             // Crear una nueva instancia de Reserva con los datos proporcionados
             const reserva = new Reserva({
                 user: usuarioEncontrado._id,
-                usuarioNombre,
                 anfitrion: anfitrionEncontrado._id,
                 tipoDeServicio,
                 fechaDeEntrada,
