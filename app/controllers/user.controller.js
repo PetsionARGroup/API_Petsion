@@ -324,7 +324,7 @@ const user = {
         const userId = decoded._id;
         // Actualizar el usuario en la base de datos para establecer validate a true
         await Users.findByIdAndUpdate(userId, { validarCorreo: true });
-        res.send('¡Cuenta confirmada con éxito!');
+        res.redirect('https://petsion.com.ar/');
     } catch (error) {
         console.error('Error al confirmar cuenta:', error);
         res.status(400).send('Error al confirmar cuenta. El token podría ser inválido o expirado.');
