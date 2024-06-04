@@ -89,7 +89,7 @@ const reservaController = {
         try {
             const { anfitrion } = req.body;
     
-            const reservas = await Reserva.find({ anfitrion: anfitrion })
+            const reservas = await Reserva.find({ anfitrion: anfitrion , confirmado : false} )
                 .populate({
                     path: 'user',
                     select:' -role -validarCorreo -_id -username -password -email -dni -fechaDeNacimiento -telefono -codigoPostal -__v -email'
@@ -131,7 +131,7 @@ const reservaController = {
         try {
             const { user } = req.body;
     
-            const reservas = await Reserva.find({ user: user })
+            const reservas = await Reserva.find({ user: user , confirmado : false})
             .select('-user') // Llenar el campo 'user' con el objeto completo
             .populate({
                 path: 'anfitrion',
