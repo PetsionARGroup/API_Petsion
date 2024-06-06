@@ -172,6 +172,26 @@ const reservaController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
+    },
+    rechazar : async(req,res) =>{
+        try{
+            const {id} = req.body;
+
+            const reserva = await Reserva.findById(id);
+
+            if(!reserva){
+                return res.status(404).json({ message: 'Reserva no encontrada' });
+            }
+
+            if (reserva.confirmado = true) {
+        
+                reserva.rechazada =true
+                await reserva.save();
+            }
+            res.status(200).json(reserva);
+        }catch (error) {
+            res.status(500).json({ message: error.message });
+        }
     }
     
 };

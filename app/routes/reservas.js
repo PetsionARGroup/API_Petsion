@@ -8,5 +8,6 @@ router.post('/anfitrion', reservaController.listarReservas);
 router.post('/user', reservaController.listarReservasUser);
 router.post('/userconfirm', reservaController.listarReservasUserConfirmado);
 router.post('/anfitrionconfirm', reservaController.listarReservasConfirmado);
+router.post('/rechazar', reservaController.rechazar);
 
 module.exports = router;

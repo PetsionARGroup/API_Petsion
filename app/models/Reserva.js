@@ -12,6 +12,7 @@ const ReservaSchema = new Schema({
     mascotasCuidado: [{ type: Schema.Types.ObjectId, ref: 'Mascota' }],
     mensaje: { type: String, required: true },
     reservaActiva: { type: Boolean, default: false },
+    rechazada: { type: Boolean, default: false },
     confirmado: { type: Boolean, default: false },
     fechaCreacion: { type: Date, default: Date.now }
 });
