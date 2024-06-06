@@ -73,7 +73,9 @@ const reservaController = {
             // Modificar el atributo confirmado solo si es diferente al actual
             if (reserva.confirmado !== confirmado) {
                 reserva.confirmado = confirmado;
-                
+                if(confirmado){
+                    reserva.reservaActiva =true
+                }
                 // Guardar los cambios en la base de datos
                 await reserva.save();
             }
