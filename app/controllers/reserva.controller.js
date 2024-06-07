@@ -91,7 +91,7 @@ const reservaController = {
         try {
             const { anfitrion } = req.body;
     
-            const reservas = await Reserva.find({ anfitrion: anfitrion , confirmado : false} )
+            const reservas = await Reserva.find({ anfitrion: anfitrion , confirmado : false, rechazada: false} )
                 .populate({
                     path: 'user',
                     select:' -role -validarCorreo -username -password -email -dni -fechaDeNacimiento -telefono -codigoPostal -__v -email'
