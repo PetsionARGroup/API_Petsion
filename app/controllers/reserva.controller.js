@@ -2,7 +2,9 @@ const Reserva = require('../models/Reserva');
 const User = require('../models/User');
 const Anfitrion = require('../models/Anfitrion');
 const user = require('./user.controller');
-const Mascota = require ('../models/Mascota')
+const Mascota = require ('../models/Mascota');
+const { enviarCorreoReserva } = require('../helpers/handleEmailReserva');
+const {enviarCorreoReservaConfirm} = require ('../helpers/handlEmailReservasConfirm')
 
 const reservaController = {
     create: async (req, res) => {
@@ -69,6 +71,15 @@ const reservaController = {
             if (!reserva) {
                 return res.status(404).json({ message: 'Reserva no encontrada' });
             }
+            const usuario = await User.findById(reserva.user);
+
+            if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+
+            // Obtener el email del usuario
+
+            const emailUsuario = usuario.email;
     
             // Modificar el atributo confirmado solo si es diferente al actual
             if (reserva.confirmado !== confirmado) {
@@ -79,7 +90,7 @@ const reservaController = {
                 // Guardar los cambios en la base de datos
                 await reserva.save();
             }
-    
+            await enviarCorreoReservaConfirm(emailUsuario)
             // Responder con la reserva actualizada
             res.status(200).json(reserva);
         } catch (error) {
@@ -133,7 +144,7 @@ const reservaController = {
         try {
             const { user } = req.body;
     
-            const reservas = await Reserva.find({ user: user , confirmado : false})
+            const reservas = await Reserva.find({ user: user , confirmado : false, rechazada : false})
             .select('user') // Llenar el campo 'user' con el objeto completo
             .populate({
                 path: 'anfitrion',
@@ -182,12 +193,23 @@ const reservaController = {
             if(!reserva){
                 return res.status(404).json({ message: 'Reserva no encontrada' });
             }
+            const usuario = await User.findById(reserva.user);
+
+            if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+
+            // Obtener el email del usuario
+
+            const emailUsuario = usuario.email;
 
             if (reserva.rechazar = true) {
         
                 reserva.rechazada =true
                 await reserva.save();
             }
+            await enviarCorreoReserva(emailUsuario)
+
             res.status(200).json(reserva);
         }catch (error) {
             res.status(500).json({ message: error.message });
