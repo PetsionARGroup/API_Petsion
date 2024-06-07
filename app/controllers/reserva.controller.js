@@ -183,7 +183,7 @@ const reservaController = {
                 return res.status(404).json({ message: 'Reserva no encontrada' });
             }
 
-            if (reserva.confirmado = true) {
+            if (reserva.rechazar = true) {
         
                 reserva.rechazada =true
                 await reserva.save();
