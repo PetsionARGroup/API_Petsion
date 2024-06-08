@@ -392,7 +392,7 @@ const anfitrion = {
     } catch (e) {
         httpError(res, e);
     }
-},
+    },
 
     delete: async (req, res) => {
         const { id } = req.params;
@@ -493,10 +493,16 @@ const anfitrion = {
         // Filtro de disponibilidad horaria
         if (disponibilidadHoraria && disponibilidadHoraria !== 'Variable') {
             // Si la disponibilidadHoraria no es 'Variable', se busca exactamente esa disponibilidad
-            query.disponibilidadHoraria = disponibilidadHoraria;
+            query.$or = [
+                { disponibilidadHoraria: disponibilidadHoraria },
+                { disponibilidadHoraria: 'Fulltime' }
+            ];
         } else if (disponibilidadHoraria === 'Fulltime') {
-            // Si la disponibilidadHoraria es 'Fulltime', se buscan todos los anfitriones sin importar la disponibilidad horaria
-            // No es necesario agregar nada al query en este caso
+            // Si la disponibilidadHoraria es 'Fulltime', se incluyen todos los anfitriones sin importar la disponibilidad horaria específica
+            query.$or = [
+                { disponibilidadHoraria: { $in: ['Mañana', 'Tarde', 'Noche'] } },
+                { disponibilidadHoraria: 'Fulltime' }
+            ];
         } else {
             // Si la disponibilidadHoraria es 'Variable', se buscan aquellos anfitriones que tengan cualquier disponibilidad horaria
             query.disponibilidadHoraria = { $in: ['Mañana', 'Tarde', 'Noche'] };
