@@ -33,6 +33,7 @@ const AnfitrionSchema = new mongoose.Schema({
     tarifaBase: {type:Number, required:true},
     cancelaciones:{ type: Boolean, required: true },
     role : {type: String, default : 'anfitrion'},
+    descripcion: { type: String, default :"Añade una descripcion sobre ti aqui :D" },
     validarCorreo : {type : Boolean, default: false}
 });
 
