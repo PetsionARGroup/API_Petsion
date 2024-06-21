@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --timeout 5000",
     "start": "node app.js"
   },
   "keywords": [],
@@ -17,8 +17,10 @@
     "express": "^4.19.2",
     "express-jwt": "^8.4.1",
     "jsonwebtoken": "^9.0.2",
+    "mocha": "^10.4.0",
     "mongodb": "^6.5.0",
     "mongoose": "^8.3.3",
-    "nodemailer": "^6.9.13"
+    "nodemailer": "^6.9.13",
+    "supertest": "^7.0.0"
   }
 }

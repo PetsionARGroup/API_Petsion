@@ -16,3 +16,5 @@ dbConnect();
 app.listen(PORT, () => {
     console.log('API lista por el puerto', PORT);
 });
+
+module.exports = app ; 
