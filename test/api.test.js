@@ -1,4 +1,8 @@
 const request = require ('supertest')
+const should = require('should')
+const assert = require('assert');
+
+
 const app  = require ('../app');
 
 
@@ -66,22 +70,35 @@ describe('API Petsion', () => {
             })
         })
     })
-    describe ("POST /user / login" , () =>{
+    describe("POST /user/login", () => {
         it("deberia responder 200 al usar user y pass validos", done => {
-            request (app)
-            .post('/user/login')
-            .send({
-                username: "pichicho6s5",
-                password: "password1234"  
-            })
-            .set('Accept', 'application/json')
-            .expect(200)
-            .end(err => {
-                if(err) return done(err);
-                done();
-            })
-        })
-    })
+            request(app)
+                .post('/user/login')
+                .send({
+                    username: "pichicho6s5",
+                    password: "password1234"
+                })
+                .set('Accept', 'application/json')
+                .expect(200)
+                .end((err, res) => {
+                    if (err) {
+                        return done(err);
+                    }
+    
+                    // Verificaciones adicionales
+                    try {
+                        // Verifica que res.body.data exista y sea un objeto
+                        should.exist(res.body.data);
+                        res.body.data.should.have.property('token').which.is.a.String();
+                        res.body.data.should.have.property('user').which.is.an.Object();
+                        res.body.data.user.should.have.properties(['name', 'role', 'email']);
+                        done();
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+        });
+    });
     describe ("POST /user / login" , () =>{
         it("deberia responder 401 al usar contraseña incorrecta", done => {
             request (app)
@@ -145,7 +162,7 @@ describe('API Petsion', () => {
         })
     })
     // Test para probar los endopoint de Anfitrion
-    describe('get  /user / listar todos los anfitriones', () => {
+    describe('get  /anfitrion / listar todos los anfitriones', () => {
         it('debería devolver todos los anfitriones', (done) => {
           request(app)
             .get('/anfitrion/') // Ajusta la ruta según cómo esté definida en tu API
@@ -156,7 +173,7 @@ describe('API Petsion', () => {
             
         });
     });
-    describe('get  /user / buscar anfitrion por id', () => {
+    describe('get  /anfitrion / buscar anfitrion por id', () => {
         it('debería devolver un anfitrion por su id', (done) => {
           request(app)
             .get('/anfitrion/667766731c702995ee9b87b7') // aqui coloco un id valido en los
@@ -167,7 +184,7 @@ describe('API Petsion', () => {
             
         });
     });
-    describe('get  /user / buscar anfitrion por id', () => {
+    describe('get  /anfitrion / buscar anfitrion por id', () => {
         it('debería devolver un error por id invalido', (done) => {
           request(app)
             .get('/anfitrion/noexiste') // aqui coloco un id valido en los
@@ -181,5 +198,33 @@ describe('API Petsion', () => {
             
             
         });
+    })
+    describe('POST /anfitrion/login', () => {
+        it('debería responder 200 al usar anfitrion y contraseña válidos', (done) => {
+            request(app)
+                .post('/anfitrion/login')
+                .send({
+                    username: "Knifucrab",
+                    password: "PassPetsion123"
+                })
+                .set('Accept', 'application/json')
+                .expect(200)
+                .end((err, res) => {
+                    if (err) return done(err);
+    
+                    try {
+                        assert.ok(res.body.data, 'Se esperaba que res.body.data esté definido');
+                        assert.strictEqual(typeof res.body.data.token, 'string', 'Se esperaba que token sea un string');
+                        assert.strictEqual(typeof res.body.data.anfitrion, 'object', 'Se esperaba que anfitrion sea un objeto');
+                        assert.ok(res.body.data.anfitrion.name, 'Se esperaba que anfitrion tenga la propiedad name');
+                        assert.ok(res.body.data.anfitrion.role, 'Se esperaba que anfitrion tenga la propiedad role');
+                        assert.ok(res.body.data.anfitrion.email, 'Se esperaba que anfitrion tenga la propiedad email');
+                        done();
+                    } catch (e) {
+                        done(e);
+                    }
+                });
+        });
     });
+    
 });

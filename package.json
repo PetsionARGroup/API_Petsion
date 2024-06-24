@@ -22,5 +22,8 @@
     "mongoose": "^8.3.3",
     "nodemailer": "^6.9.13",
     "supertest": "^7.0.0"
+  },
+  "devDependencies": {
+    "should": "^13.2.3"
   }
 }
