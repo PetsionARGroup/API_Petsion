@@ -2,7 +2,6 @@ const request = require ('supertest')
 const should = require('should')
 const assert = require('assert');
 
-
 const app  = require ('../app');
 
 
@@ -35,7 +34,7 @@ describe('API Petsion', () => {
     describe('get  /user / buscar usuario por id', () => {
         it('debería devolver un error por id invalido', (done) => {
           request(app)
-            .get('/user/noexiste') // aqui coloco un id valido en los
+            .get('/user/noexiste') // aqui coloco un id invalido en los
              .set('Accept' , 'application/json')
              .expect('Content-type', /json/)
              .expect(500)
@@ -165,7 +164,7 @@ describe('API Petsion', () => {
     describe('get  /anfitrion / listar todos los anfitriones', () => {
         it('debería devolver todos los anfitriones', (done) => {
           request(app)
-            .get('/anfitrion/') // Ajusta la ruta según cómo esté definida en tu API
+            .get('/anfitrion/') 
              .set('Accept' , 'application/json')
              .expect('Content-type', /json/)
              .expect(200, done)
@@ -225,6 +224,6 @@ describe('API Petsion', () => {
                     }
                 });
         });
-    });
+    })
     
 });
