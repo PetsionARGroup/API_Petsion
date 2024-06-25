@@ -114,10 +114,10 @@ describe('API Petsion', () => {
             })
         })
     })
-    describe ("POST /user / register" , () =>{
+    describe ("PUT /user / id:" , () =>{
         it("tiene que responder 401 sin autorizacion", done => {
             request (app)
-            .put('/user/register')
+            .put('/user/665e74a3deaf5bac065194dc')
             .send({
                 username: "pichic6ho6s5",
                 password: "password1234",
@@ -137,10 +137,10 @@ describe('API Petsion', () => {
             })
         })
     })
-    describe ("POST /user / register" , () =>{
+    describe ("PATCH /user / ID:" , () =>{
         it("tiene que responder 401 sin autorizacion", done => {
             request (app)
-            .patch('/user/register')
+            .patch('/user/665e74a3deaf5bac065194dc')
             .send({
                 username: "pichic6ho6s5",
                 password: "password1234",
