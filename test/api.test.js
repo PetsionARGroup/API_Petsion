@@ -10,7 +10,7 @@ describe('API Petsion', () => {
     describe('get  /user / listar todos los usuarios', () => {
       it('debería devolver todos los usuarios', (done) => {
         request(app)
-          .get('/user/') // Ajusta la ruta según cómo esté definida en tu API
+          .get('/user/') // ruta a probar
            .set('Accept' , 'application/json')
            .expect('Content-type', /json/)
            .expect(200, done)
@@ -22,7 +22,7 @@ describe('API Petsion', () => {
     describe('get  /user / buscar usuario por id', () => {
         it('debería devolver un usuario por su id', (done) => {
           request(app)
-            .get('/user/665e74a3deaf5bac065194dc') // aqui coloco un id valido en los
+            .get('/user/665e74a3deaf5bac065194dc') //aqui envio la ruta con un id valido
              .set('Accept' , 'application/json')
              .expect('Content-type', /json/)
              .expect(200, done)
@@ -34,7 +34,7 @@ describe('API Petsion', () => {
     describe('get  /user / buscar usuario por id', () => {
         it('debería devolver un error por id invalido', (done) => {
           request(app)
-            .get('/user/noexiste') // aqui coloco un id invalido en los
+            .get('/user/noexiste') // aqui envio la ruta con un id invalido
              .set('Accept' , 'application/json')
              .expect('Content-type', /json/)
              .expect(500)
@@ -175,7 +175,7 @@ describe('API Petsion', () => {
     describe('get  /anfitrion / buscar anfitrion por id', () => {
         it('debería devolver un anfitrion por su id', (done) => {
           request(app)
-            .get('/anfitrion/667766731c702995ee9b87b7') // aqui coloco un id valido en los
+            .get('/anfitrion/667766731c702995ee9b87b7') // aqui cologo la ruta con un id valido
              .set('Accept' , 'application/json')
              .expect('Content-type', /json/)
              .expect(200, done)
@@ -186,7 +186,7 @@ describe('API Petsion', () => {
     describe('get  /anfitrion / buscar anfitrion por id', () => {
         it('debería devolver un error por id invalido', (done) => {
           request(app)
-            .get('/anfitrion/noexiste') // aqui coloco un id valido en los
+            .get('/anfitrion/noexiste') // aqui coloco la ruta con un id invalido
              .set('Accept' , 'application/json')
              .expect('Content-type', /json/)
              .expect(500)
@@ -225,5 +225,84 @@ describe('API Petsion', () => {
                 });
         });
     })
-    
+    describe ("POST /anfitrion / register" , () =>{
+        it("deberia responder 201", done => {
+            request (app)
+            .post('/anfitrion/register')
+            .send({
+                username: "exampleuser",
+                password: "securepassword123",
+                name: "John",
+                lastname: "Doe",
+                email: "johndoe@example.com",
+                dni: "1234655678",
+                fechaDeNacimiento: "1990-01-01",
+                telefono: "1234567890",
+                direccion: "Main St",
+                numeroDireccion: "123",
+                codigoPostal: "10001",
+                tipoDeVivienda: "casa",
+                conPatio: true,
+                distintoDueño: false,
+                cantidadDeAnimales: 2,
+                admitePerro: true,
+                admiteGato: false,
+                admitAlltypesMascotas: true,
+                disponibilidadHoraria: "Fulltime",
+                disponibilidadPaseo: true,
+                disponibilidadVisita: true,
+                disponibilidadAlojamiento: true,
+                disponibilidadlunes: true,
+                disponibilidadmartes: true,
+                disponibilidadmiercoles: true,
+                disponibilidadjueves: true,
+                disponibilidadviernes: true,
+                disponibilidadsabado: true,
+                disponibilidaddomingo: true,
+                tarifaBase: 50,
+                cancelaciones: false
+            })
+            .set('Accept', 'application/json')
+            .expect(201)
+            .end(err => {
+                if(err) return done(err);
+                done();
+            })
+        })
+    })
+    //ahora probaremos los endpoints de mascotas
+    describe ("POST /mascota / register" , () =>{
+        it("deberia responder 201", done => {
+            request (app)
+            .post('/mascota/register')
+            .send({
+                user: "665e74a3deaf5bac065194dc",  
+                tipoMascota: "Perro",
+                nombre: "Papero",
+                edad: 3,
+                peso: 20
+            })
+            .set('Accept', 'application/json')
+            .expect(201)
+            .end(err => {
+                if(err) return done(err);
+                done();
+            })
+        })
+    })
+    //busca todas las mascotas que tengan asociada el id de un usuario dueño
+    describe('POST  /mascota / LISTAR : ', () => {
+        it('debería devolver una lista de mascotas por id de usuario', (done) => {
+          request(app)
+            .post('/mascota/listar')
+            .send({
+                user: "665e74a3deaf5bac065194dc"
+            })
+             .set('Accept' , 'application/json')
+             .expect('Content-type', /json/)
+             .expect(200, done)
+            
+            
+        });
+    });
 });
