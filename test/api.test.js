@@ -46,29 +46,33 @@ describe('API Petsion', () => {
             
         });
     });
-    describe ("POST /user / register" , () =>{
-        it("deberia responder 201", done => {
-            request (app)
-            .post('/user/register')
-            .send({
-                username: "pichic6ho6s5",
-                password: "password1234",
-                name: "John",
-                lastname: "Doe",
-                email: "pichichs66chichi@example.com",
-                dni: "030368554785",
-                fechaDeNacimiento: "1990-01-01",
-                telefono: "123456789",
-                codigoPostal: "12345"
-            })
-            .set('Accept', 'application/json')
-            .expect(201)
-            .end(err => {
-                if(err) return done(err);
-                done();
+        describe ("POST /user / register" , () =>{
+            it("deberia responder 201", done => {
+                //Act
+                request (app)
+                .post('/user/register')
+                .send(
+                     //Arrange
+                    {
+                    username: "pichic6ho6s5",
+                    password: "password1234",
+                    name: "John",
+                    lastname: "Doe",
+                    email: "pichichs66chichi@example.com",
+                    dni: "030368554785",
+                    fechaDeNacimiento: "1990-01-01",
+                    telefono: "123456789",
+                    codigoPostal: "12345"
+                })
+                .set('Accept', 'application/json')
+                //Assert
+                .expect(201)
+                .end(err => {
+                    if(err) return done(err);
+                    done();
+                })
             })
         })
-    })
     describe("POST /user/login", () => {
         it("deberia responder 200 al usar user y pass validos", done => {
             request(app)
