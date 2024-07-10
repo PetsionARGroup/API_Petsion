@@ -224,6 +224,21 @@ const reservaController = {
                 return res.status(404).json({ error: 'Reserva no encontrada' });
             }
     
+            // Verificar si la reserva está confirmada y la fecha de salida se ha cumplido
+            if (!reserva.confirmado) {
+                return res.status(400).json({ error: 'La reserva aún no está confirmada' });
+            }
+    
+            const fechaActual = new Date();
+            if (reserva.fechaDeSalida > fechaActual) {
+                return res.status(400).json({ error: 'Aún no ha llegado la fecha de salida de la reserva' });
+            }
+    
+            // Verificar si la reserva ya tiene una calificación distinta de cero
+            if (reserva.rating !== 0) {
+                return res.status(400).json({ error: 'La reserva ya ha sido calificada anteriormente' });
+            }
+    
             // Actualizar la reserva con la calificación
             reserva.rating = rating;
             await reserva.save();
