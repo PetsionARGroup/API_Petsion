@@ -214,6 +214,30 @@ const reservaController = {
         }catch (error) {
             res.status(500).json({ message: error.message });
         }
+    },
+    calificar: async (req, res) => {
+        const { reservaId, rating } = req.body; 
+    
+        try {
+            const reserva = await Reserva.findById(reservaId).populate('anfitrion');
+            if (!reserva) {
+                return res.status(404).json({ error: 'Reserva no encontrada' });
+            }
+    
+            // Actualizar la reserva con la calificación
+            reserva.rating = rating;
+            await reserva.save();
+    
+            // Actualizar la puntuación del anfitrión
+            const anfitrion = reserva.anfitrion;
+            anfitrion.rating = ((anfitrion.rating * anfitrion.numberOfRatings) + rating) / (anfitrion.numberOfRatings + 1);
+            anfitrion.numberOfRatings += 1;
+            await anfitrion.save();
+    
+            res.json({ message: 'Calificación guardada con éxito' });
+        } catch (error) {
+            res.status(500).json({ error: 'Error al guardar la calificación' });
+        }
     }
     
 };

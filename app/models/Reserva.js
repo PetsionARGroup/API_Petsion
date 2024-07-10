@@ -14,7 +14,8 @@ const ReservaSchema = new Schema({
     reservaActiva: { type: Boolean, default: false },
     rechazada: { type: Boolean, default: false },
     confirmado: { type: Boolean, default: false },
-    fechaCreacion: { type: Date, default: Date.now }
+    fechaCreacion: { type: Date, default: Date.now },
+    rating: { type: Number, min: 0, max: 5 , default : 0 }
 });
 
 module.exports = mongoose.model('Reserva', ReservaSchema);

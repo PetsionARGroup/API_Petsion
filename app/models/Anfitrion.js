@@ -34,7 +34,9 @@ const AnfitrionSchema = new mongoose.Schema({
     cancelaciones:{ type: Boolean, required: true },
     role : {type: String, default : 'anfitrion'},
     descripcion: { type: String, default :"Añade una descripcion sobre ti aqui :D" },
-    validarCorreo : {type : Boolean, default: false}
+    validarCorreo : {type : Boolean, default: false},
+    rating: { type: Number, default: 0 },
+    numberOfRatings: { type: Number, default: 0 }
 });
 
 

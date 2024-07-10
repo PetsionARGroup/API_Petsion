@@ -9,5 +9,6 @@ router.post('/user', reservaController.listarReservasUser);
 router.post('/userconfirm', reservaController.listarReservasUserConfirmado);
 router.post('/anfitrionconfirm', reservaController.listarReservasConfirmado);
 router.post('/rechazar', reservaController.rechazar);
+router.post('/calificar', reservaController.calificar);
 
 module.exports = router;
