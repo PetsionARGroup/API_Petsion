@@ -122,14 +122,25 @@ const reservaController = {
     listarReservasConfirmado: async (req, res) => {
         try {
             const { anfitrion } = req.body;
+            const now = new Date();
     
-            const reservas = await Reserva.find({ anfitrion: anfitrion ,confirmado : true })
-                .populate({
-                    path: 'user',
-                    select:' -role -validarCorreo -_id -username -password -dni -fechaDeNacimiento -codigoPostal -__v'
-                }) // Llenar el campo 'user' con el objeto completo
-                .select('-anfitrion')
-                .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
+            const reservas = await Reserva.find({
+                anfitrion: anfitrion,
+                confirmado: true,
+                $or: [
+                    { fechaDeSalida: { $gt: now } },
+                    {
+                        fechaDeSalida: now,
+                        horarioDeSalida: { $gt: now }
+                    }
+                ]
+            })
+            .populate({
+                path: 'user',
+                select: '-role -validarCorreo -_id -username -password -dni -fechaDeNacimiento -codigoPostal -__v'
+            }) // Llenar el campo 'user' con el objeto completo
+            .select('-anfitrion')
+            .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
     
             if (!reservas.length) {
                 return res.status(404).json({ message: 'No se encontraron reservas' });
@@ -140,6 +151,37 @@ const reservaController = {
             res.status(500).json({ message: error.message });
         }
     },
+
+    ReservAnfitrionFinalizada: async (req, res) => {
+        try {
+            const { anfitrion } = req.body;
+            const now = new Date();
+    
+            const reservas = await Reserva.find({
+                anfitrion: anfitrion,
+                confirmado: true,
+                $and: [
+                    { fechaDeSalida: { $lt: now } },
+                    { horarioDeSalida: { $lt: now } }
+                ]
+            })
+            .populate({
+                path: 'user',
+                select: '-role -validarCorreo -_id -username -password -dni -fechaDeNacimiento -codigoPostal -__v'
+            }) // Llenar el campo 'user' con el objeto completo
+            .select('-anfitrion')
+            .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
+    
+            if (!reservas.length) {
+                return res.status(404).json({ message: 'No se encontraron reservas' });
+            }
+    
+            res.status(200).json(reservas);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+     
     listarReservasUser: async (req, res) => {
         try {
             const { user } = req.body;
@@ -165,15 +207,25 @@ const reservaController = {
     listarReservasUserConfirmado: async (req, res) => {
         try {
             const { user } = req.body;
+            const now = new Date();
     
-            const reservas = await Reserva.find({ user: user , confirmado : true})
+            const reservas = await Reserva.find({
+                user: user,
+                confirmado: true,
+                $or: [
+                    { fechaDeSalida: { $gt: now } },
+                    {
+                        fechaDeSalida: now,
+                        horarioDeSalida: { $gt: now }
+                    }
+                ]
+            })
             .select('-user') // Llenar el campo 'user' con el objeto completo
             .populate({
                 path: 'anfitrion',
-                select: '-validarCorreo -password -username -_id -dni -fechaDeNacimiento -numeroDireccion -codigoPostal -conPatio -distintoDueño -cantidadDeAnimales -admitePerro -admiteGato -admitAlltypesMascotas -disponibilidadHoraria -disponibilidadPaseo -disponibilidadVisita -disponibilidadAlojamiento -disponibilidadlunes -disponibilidadmartes -disponibilidadmiercoles -disponibilidadjueves -disponibilidadviernes -disponibilidadsabado -disponibilidaddomingo -tarifabase -cancelaciones -role -__v ' // Excluir el campo 'password' del objeto 'anfitrion'
-
+                select: '-validarCorreo -password -username -_id -dni -fechaDeNacimiento -numeroDireccion -codigoPostal -conPatio -distintoDueño -cantidadDeAnimales -admitePerro -admiteGato -admitAlltypesMascotas -disponibilidadHoraria -disponibilidadPaseo -disponibilidadVisita -disponibilidadAlojamiento -disponibilidadlunes -disponibilidadmartes -disponibilidadmiercoles -disponibilidadjueves -disponibilidadviernes -disponibilidadsabado -disponibilidaddomingo -tarifabase -cancelaciones -role -__v' // Excluir el campo 'password' del objeto 'anfitrion'
             })
-            .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos    
+            .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
     
             if (!reservas.length) {
                 return res.status(404).json({ message: 'No se encontraron reservas' });
@@ -184,6 +236,7 @@ const reservaController = {
             res.status(500).json({ message: error.message });
         }
     },
+    
     rechazar : async(req,res) =>{
         try{
             const {id} = req.body;
@@ -253,7 +306,37 @@ const reservaController = {
         } catch (error) {
             res.status(500).json({ error: 'Error al guardar la calificación' });
         }
+    },
+    listarReservasCalificar: async (req, res) => {
+        try {
+            const { user } = req.body;
+            const now = new Date();
+    
+            const reservas = await Reserva.find({
+                user: user,
+                confirmado: true,
+                $and: [
+                    { fechaDeSalida: { $lt: now } },
+                    { horarioDeSalida: { $lt: now } }
+                ]
+            })
+            .select('-user') // Llenar el campo 'user' con el objeto completo
+            .populate({
+                path: 'anfitrion',
+                select: '-validarCorreo -password -username -_id -dni -fechaDeNacimiento -numeroDireccion -codigoPostal -conPatio -distintoDueño -cantidadDeAnimales -admitePerro -admiteGato -admitAlltypesMascotas -disponibilidadHoraria -disponibilidadPaseo -disponibilidadVisita -disponibilidadAlojamiento -disponibilidadlunes -disponibilidadmartes -disponibilidadmiercoles -disponibilidadjueves -disponibilidadviernes -disponibilidadsabado -disponibilidaddomingo -tarifabase -cancelaciones -role -__v' // Excluir el campo 'password' del objeto 'anfitrion'
+            })
+            .populate('mascotasCuidado'); // Llenar el campo 'mascotasCuidado' con los objetos completos
+    
+            if (!reservas.length) {
+                return res.status(404).json({ message: 'No se encontraron reservas' });
+            }
+    
+            res.status(200).json(reservas);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
     }
+    
     
 };
 
