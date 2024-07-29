@@ -290,6 +290,11 @@ const user = {
     
             // Actualiza las propiedades del usuario con req.body
             Object.assign(user, req.body);
+            
+            if (req.body.password) {
+                const passwordHash = await encrypt(req.body.password);
+                user.password = passwordHash;
+            }
     
             // Guarda el usuario actualizado en la base de datos
             await user.save();
