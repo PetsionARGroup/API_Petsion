@@ -2,10 +2,11 @@ const Anfitrions =require('../models/Anfitrion')
 const {httpError} = require('../helpers/handleError')
 const { register } = require('./user.controller')
 const {encrypt , compare} = require ('../helpers/handlePassword')
-const { tokenSign } = require('../helpers/handleJwt')
+const { tokenSign, verifyToken } = require('../helpers/handleJwt')
 const {enviarCorreoConfirmacionAnfitrion}= require('../helpers/handleMailAnfitrion')
 const JWT_SECRET = process.env.JWT_SECRET;
 const jwt=require('jsonwebtoken')
+const { enviarCorreoRecuperacionContraseña} = require ('../helpers/recuperarPassAnfitrion')
 
 const anfitrion = {
     list: async(req,res,next)=>{
@@ -382,17 +383,23 @@ const anfitrion = {
             return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
         }
 
-        // Actualiza las propiedades del usuario con req.body
+        // Actualiza las propiedades del anfitrión con req.body
         Object.assign(anfitrion, req.body);
 
-        // Guarda el usuario actualizado en la base de datos
+        // Si se proporciona una nueva contraseña, encríptala
+        if (req.body.password) {
+            const passwordHash = await encrypt(req.body.password);
+            anfitrion.password = passwordHash;
+        }
+
+        // Guarda el anfitrión actualizado en la base de datos
         await anfitrion.save();
 
         res.sendStatus(204);
     } catch (e) {
         httpError(res, e);
     }
-    },
+},
 
     delete: async (req, res) => {
         const { id } = req.params;
@@ -424,6 +431,66 @@ const anfitrion = {
             res.status(400).send('Error al confirmar cuenta. El token podría ser inválido o expirado.');
         }
     },
+    sendPasswordResetEmail: async (req, res) => {
+        try {
+            const { email } = req.body;
+            
+            // Verifica si el email está registrado
+            const anfitrion = await Anfitrions.findOne({ email });
+            if (!anfitrion) {
+                return res.status(400).send({ message: "El correo electrónico no está registrado" });
+            }
+    
+            // Crear un token de restablecimiento de contraseña
+            const resetToken = await tokenSign(anfitrion._id)
+            
+            
+           
+    
+            await anfitrion.save();
+    
+            // Enviar correo electrónico con el token
+            await enviarCorreoRecuperacionContraseña(anfitrion.email, resetToken);
+    
+            res.status(200).send({ message: "Correo de recuperación de contraseña enviado" });
+        } catch (e) {
+            httpError(res, e);
+        }
+    },
+    resetPassword : async (req, res) => {
+        try {
+            const { token, newPassword } = req.body;
+
+        if (!token || !newPassword) {
+            return res.status(400).send({ message: "Token o nueva contraseña no proporcionados" });
+        }
+
+        // Verifica el token
+        const decoded = await verifyToken(token);
+        if (!decoded) {
+            return res.status(400).send({ message: "Token inválido o expirado" });
+        }
+
+        // Busca al anfitrión con el ID decodificado del token
+        const anfitrion = await Anfitrions.findOne({ _id: decoded._id });
+        if (!anfitrion) {
+            return res.status(404).send({ message: "Usuario no encontrado" });
+        }
+
+        // Encripta la nueva contraseña
+        const passwordHash = await encrypt(newPassword);
+
+        // Actualiza la contraseña
+        anfitrion.password = passwordHash;
+
+        // Guarda los cambios
+        await anfitrion.save();
+
+        res.status(200).send({ message: "Contraseña restablecida exitosamente" });
+    } catch (e) {
+        httpError(res, e);
+    }
+},
     
     searchAnfitrionByCriteria: async (req, res) => {
     try {

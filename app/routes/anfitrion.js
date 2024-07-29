@@ -15,6 +15,11 @@ router.post('/perros', anfitrion.searchAdmitePerro);
 router.post('/gatos', anfitrion.searchGatos);
 router.post('/todoslostipos', anfitrion.searchAdmitAlltypesMascotas);
 router.post('/filtrado', anfitrion.searchAnfitrionByCriteria);
-router.get('/confirmar/:token', anfitrion.confirmarCuenta)
+router.get('/confirmar/:token', anfitrion.confirmarCuenta);
+router.post('/reset-password', anfitrion.sendPasswordResetEmail);
+router.post('/nuevo-password', anfitrion.resetPassword);
+
+
+
 
 module.exports = router
