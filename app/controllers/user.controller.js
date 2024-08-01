@@ -51,9 +51,9 @@ const user = {
                 return res.status(400).send({ message: "El DNI ya está registrado" });
             }
         
-            // Comprobación de que el nombre no contiene caracteres especiales
-            if (!/^[a-zA-Z\s]+$/.test(name)) {
-                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales" });
+            // Comprobación de que el nombre no contiene caracteres especiales (excepto la ñ y Ñ) y permite espacios entre nombres
+            if (!/^[a-zA-ZñÑ\s]+$/.test(name)) {
+                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales, excepto la ñ, y debe permitir espacios entre nombres" });
             }
         
             // Comprobación de que el nombre no contiene números
@@ -66,9 +66,9 @@ const user = {
                 return res.status(400).send({ message: "El nombre no puede contener todos los caracteres iguales" });
             }
         
-            // Comprobación de que el apellido no contiene caracteres especiales
-            if (!/^[a-zA-Z\s]+$/.test(lastname)) {
-                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales" });
+            // Comprobación de que el apellido no contiene caracteres especiales (excepto la ñ y Ñ) y permite espacios entre apellidos
+            if (!/^[a-zA-ZñÑ\s]+$/.test(lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales, excepto la ñ, y debe permitir espacios entre apellidos" });
             }
         
             // Comprobación de que el apellido no contiene números
@@ -80,38 +80,39 @@ const user = {
             if (/^([^\s])\1+$/.test(lastname)) {
                 return res.status(400).send({ message: "El apellido no puede contener todos los caracteres iguales" });
             }
+            
             // Verifica si el dni solo contiene números y no tiene espacios ni caracteres especiales
             if (!/^\d+$/.test(dni)) {
                 return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
             }
-            const passwordHash = await encrypt(password)
-
+            
+            const passwordHash = await encrypt(password);
+    
             let newUser;
             try {
-            newUser = await Users.create({
-                username, password: passwordHash, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
-            });
+                newUser = await Users.create({
+                    username, password: passwordHash, name, lastname, email, dni, fechaDeNacimiento, telefono, codigoPostal
+                });
             } catch (creationError) {
-            // Si se produce un error al crear el usuario, lógica para borrarlo
-            if (newUser) {
-                await Users.findByIdAndDelete(newUser._id);
-            }
-            throw creationError; // Lanza el error para que sea manejado en el bloque catch exterior
+                // Si se produce un error al crear el usuario, lógica para borrarlo
+                if (newUser) {
+                    await Users.findByIdAndDelete(newUser._id);
+                }
+                throw creationError; // Lanza el error para que sea manejado en el bloque catch exterior
             }
             
             newUser.set("password", undefined, { strict: false });
             const data = {
                 token: await tokenSign(newUser),
-               user: newUser
+                user: newUser
             };
-            const confirmationToken = data.token
-            await enviarCorreoConfirmacion(newUser.email, confirmationToken)
-
+            const confirmationToken = data.token;
+            await enviarCorreoConfirmacion(newUser.email, confirmationToken);
+    
             res.status(201).send({ data });
         } catch (e) {
             httpError(res, e);
         }
-        
     },
 
     login : async (req,res) => {

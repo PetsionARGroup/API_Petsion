@@ -117,9 +117,9 @@ const anfitrion = {
                 return res.status(400).send({ message: "El DNI ya está registrado" });
             }
     
-            // Comprobación de que el nombre no contiene caracteres especiales
-            if (!/^[a-zA-Z\s]+$/.test(name)) {
-                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales" });
+            // Comprobación de que el nombre no contiene caracteres especiales (excepto ñ y Ñ) y permite espacios
+            if (!/^[a-zA-ZñÑ\s]+$/.test(name)) {
+                return res.status(400).send({ message: "El nombre no puede contener caracteres especiales, excepto la ñ y debe permitir espacios entre nombres" });
             }
     
             // Comprobación de que el nombre no contiene números
@@ -132,9 +132,9 @@ const anfitrion = {
                 return res.status(400).send({ message: "El nombre no puede contener todos los caracteres iguales" });
             }
     
-            // Comprobación de que el apellido no contiene caracteres especiales
-            if (!/^[a-zA-Z\s]+$/.test(lastname)) {
-                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales" });
+            // Comprobación de que el apellido no contiene caracteres especiales (excepto ñ y Ñ) y permite espacios
+            if (!/^[a-zA-ZñÑ\s]+$/.test(lastname)) {
+                return res.status(400).send({ message: "El apellido no puede contener caracteres especiales, excepto la ñ y debe permitir espacios entre apellidos" });
             }
     
             // Comprobación de que el apellido no contiene números
@@ -151,59 +151,59 @@ const anfitrion = {
             if (!/^\d+$/.test(dni)) {
                 return res.status(400).send({ message: "El DNI solo puede contener números sin espacios ni caracteres especiales" });
             }
-
-            const passwordHash = await encrypt(password)
-
+    
+            const passwordHash = await encrypt(password);
+    
             let newAnfitrion;
-            try{
-            newAnfitrion = await Anfitrions.create({
-                username, 
-                password : passwordHash, 
-                name, 
-                lastname, 
-                email, 
-                dni, 
-                fechaDeNacimiento, 
-                telefono, 
-                direccion,
-                numeroDireccion,
-                codigoPostal, 
-                tipoDeVivienda, 
-                conPatio, 
-                distintoDueño, 
-                cantidadDeAnimales,
-                admitePerro, 
-                admiteGato, 
-                admitAlltypesMascotas,
-                disponibilidadHoraria, 
-                disponibilidadPaseo,
-                disponibilidadVisita,
-                disponibilidadAlojamiento, 
-                disponibilidadlunes,
-                disponibilidadmartes,
-                disponibilidadmiercoles,
-                disponibilidadjueves,
-                disponibilidadviernes,
-                disponibilidadsabado,
-                disponibilidaddomingo,
-                tarifaBase, 
-                cancelaciones   
-            });
-            }catch(creationError){
-                if(newAnfitrion){
+            try {
+                newAnfitrion = await Anfitrions.create({
+                    username, 
+                    password: passwordHash, 
+                    name, 
+                    lastname, 
+                    email, 
+                    dni, 
+                    fechaDeNacimiento, 
+                    telefono, 
+                    direccion,
+                    numeroDireccion,
+                    codigoPostal, 
+                    tipoDeVivienda, 
+                    conPatio, 
+                    distintoDueño, 
+                    cantidadDeAnimales,
+                    admitePerro, 
+                    admiteGato, 
+                    admitAlltypesMascotas,
+                    disponibilidadHoraria, 
+                    disponibilidadPaseo,
+                    disponibilidadVisita,
+                    disponibilidadAlojamiento, 
+                    disponibilidadlunes,
+                    disponibilidadmartes,
+                    disponibilidadmiercoles,
+                    disponibilidadjueves,
+                    disponibilidadviernes,
+                    disponibilidadsabado,
+                    disponibilidaddomingo,
+                    tarifaBase, 
+                    cancelaciones   
+                });
+            } catch (creationError) {
+                if (newAnfitrion) {
                     await Anfitrions.findByIdAndDelete(newAnfitrion._id);
                 }
                 throw creationError;
             }
-            newAnfitrion.set("password", undefined,{stritc:false})
+            newAnfitrion.set("password", undefined, { strict: false });
             const data = {
-                token : await tokenSign(newAnfitrion),
-                anfitrion : newAnfitrion
-            }
-            const confirmationToken = data.token
-            await enviarCorreoConfirmacionAnfitrion(newAnfitrion.email, confirmationToken)
-
-            res.status(201).send({ data});
+                token: await tokenSign(newAnfitrion),
+                anfitrion: newAnfitrion
+            };
+            const confirmationToken = data.token;
+            await enviarCorreoConfirmacionAnfitrion(newAnfitrion.email, confirmationToken);
+    
+            res.status(201).send({ data });
         } catch (e) {
             httpError(res, e);
         }
