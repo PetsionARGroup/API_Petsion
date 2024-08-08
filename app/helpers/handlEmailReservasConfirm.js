@@ -7,7 +7,7 @@ const enviarCorreoReservaConfirm = async (email ) => {
         const correoElectronico = {
             from: USUARIO_MAIL,
             to: email,
-            subject: 'Consulta creada exitosamente',
+            subject: 'Reserva creada exitosamente',
             html: `<p>Hola tu reserva fue confirmada, Muchas gracias por usar petsion !. Puedes ver los datos de contacto desde la pagina web en reservas confirmadas </p>`
         };
         // Envía el correo electrónico

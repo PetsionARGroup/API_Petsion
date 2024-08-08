@@ -7,7 +7,7 @@ const enviarCorreoReserva = async (email ) => {
         const correoElectronico = {
             from: USUARIO_MAIL,
             to: email,
-            subject: 'Consulta creada exitosamente',
+            subject: 'Reserva creada exitosamente',
             html: `<p>Hola, tu reserva fue rechazada , por favor selecciona un nuevo cuidador. Lamentamos las molestias! </p>`
         };
         // Envía el correo electrónico

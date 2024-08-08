@@ -335,6 +335,29 @@ const reservaController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
+    },
+    delete: async (req, res) => {
+        try {
+            // Extraer el ID de la reserva de los parámetros de la solicitud
+            const { id } = req.params;
+    
+            // Verificar si la reserva con el ID proporcionado existe
+            const reserva = await Reserva.findById(id);
+    
+            // Si la reserva no existe, devolver un error 404
+            if (!reserva) {
+                return res.status(404).json({ message: 'Reserva no encontrada' });
+            }
+    
+            // Eliminar la reserva de la base de datos
+            await Reserva.findByIdAndDelete(id);
+    
+            // Devolver una respuesta exitosa con un mensaje de confirmación
+            res.status(200).json({ message: 'Reserva eliminada exitosamente' });
+        } catch (error) {
+            // Manejar cualquier error y devolver un mensaje de error con el estado 500 (Internal Server Error)
+            res.status(500).json({ message: error.message });
+        }
     }
     
     

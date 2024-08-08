@@ -12,6 +12,7 @@ router.post('/rechazar', reservaController.rechazar);
 router.post('/calificar', reservaController.calificar);
 router.post('/finalizadas/user', reservaController.listarReservasCalificar);
 router.post('/finalizadas/anfitrion', reservaController.ReservAnfitrionFinalizada);
+router.delete('/:id', reservaController.delete)
 
 
 module.exports = router;
